@@ -1,15 +1,26 @@
-import Vue from "vue";
-import Router from "vue-router";
-import Home from "./views/Home.vue";
+import Vue from "vue"
+import Router from "vue-router"
+import Home from "./views/Home.vue"
+import Index from "./views/Index"
+import Login from "./views/Login"
 
-Vue.use(Router);
+Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
+  mode: 'history',
+  routes: [{
       path: "/",
-      name: "home",
-      component: Home
+      redirect: '/manager/index'
+    },
+    {
+      path: "/manager/index",
+      name: 'manager',
+      component: Index
+    },
+    {
+      path: "/manager/login",
+      name: 'login',
+      component: Login
     },
     {
       path: "/about",
@@ -18,7 +29,7 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () =>
-        import(/* webpackChunkName: "about" */ "./views/About.vue")
+        import( /* webpackChunkName: "about" */ "./views/About.vue")
     }
   ]
 });

@@ -1,0 +1,19 @@
+query blogs($pageIndex: Int!, $pageSize: Int!){
+  blogs(pageIndex: $pageIndex, pageSize: $pageSize) {
+    list {
+      title
+      createDate
+      author {
+        nickname
+      }
+      category {
+        text
+      }
+    }
+    pagination {
+      total
+      pageIndex
+      pageSize
+    }
+  }
+}
