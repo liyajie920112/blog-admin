@@ -7,16 +7,16 @@
       >新增</a-button>
     </div>
     <div class="table-wrapper">
-      <a-spin :spinning="$apollo.loading">
-        <a-table
-          :columns="columns"
-          :row-key="record => record.title"
-          :data-source="blogs.list"
-          :pagination="paginationCom"
-          :loading="loading"
-          @change="handleTableChange"
-        ></a-table>
-      </a-spin>
+      <a-table
+        :columns="columns"
+        :row-key="record => record.title"
+        :data-source="blogs.list"
+        :pagination="paginationCom"
+        :loading="$apollo.loading"
+        @change="handleTableChange"
+      >
+        <router-link slot="mytitle" slot-scope="text, record" :to="`manager/editor/${record._id}`">{{text}}</router-link>
+      </a-table>
     </div>
   </div>
 </template>
@@ -33,7 +33,9 @@ const columns = [
   },
   {
     title: "标题",
-    dataIndex: "title"
+    dataIndex: "title",
+    key: 'title',
+    scopedSlots: { customRender: 'mytitle' }
   },
   {
     title: "Author",
@@ -104,7 +106,10 @@ export default {
   },
   methods: {
     addBlog() {
-      // console.log(this.blogs)
+      this.$router.push({path: 'manager/editor'})
+    },
+    onSelect(item) {
+      console.log(item)
     },
     handleTableChange(page, pageSize) {
       this.$apollo.queries.blogs.fetchMore({
@@ -125,10 +130,8 @@ export default {
 <style lang="less" scoped>
 .blog-wrapper {
   .filter-wrapper {
-    padding: 10px;
   }
   .table-wrapper {
-    padding: 0 10px;
   }
 }
 </style>

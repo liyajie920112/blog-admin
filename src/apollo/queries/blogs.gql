@@ -1,6 +1,7 @@
 query blogs($pageIndex: Int!, $pageSize: Int!){
   blogs(pageIndex: $pageIndex, pageSize: $pageSize) {
     list {
+      _id
       title
       createDate
       author {

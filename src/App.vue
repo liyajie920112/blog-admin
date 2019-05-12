@@ -1,11 +1,6 @@
 <template>
   <div id="app">
-    <div class="nav">
-      <Nav/>
-    </div>
-    <div class="content">
-      <router-view />
-    </div>
+    <router-view />
   </div>
 </template>
 
@@ -18,16 +13,3 @@ export default {
 }
 </script>
 
-
-<style lang="less" scoped>
-#app {
-  display: flex;
-  height: 100vh;
-  .nav {
-    width: 200px;
-  }
-  .content {
-    flex: 1;
-  }
-}
-</style>

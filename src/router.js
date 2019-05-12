@@ -1,35 +1,33 @@
-import Vue from "vue"
-import Router from "vue-router"
-import Home from "./views/Home.vue"
-import Index from "./views/Index"
-import Login from "./views/Login"
+import Vue from 'vue'
+import Router from 'vue-router'
+import Home from './views/Home.vue'
+import Index from './views/Index'
+import Login from './views/Login'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   routes: [{
-      path: "/",
-      redirect: '/manager/index'
+      path: '/',
+      redirect: '/manager'
     },
     {
-      path: "/manager/index",
-      name: 'manager',
-      component: Index
+      path: '/manager',
+      component: () => import( /* webpackChunkName: 'layout' */ './views/Layout.vue'),
+      children: [{
+        path: '',
+        component: () => import( /* webpackChunkName: 'layout' */ './views/Index.vue')        
+      },{
+        path: 'editor/:id',
+        name: 'editor',
+        component: () => import( /* webpackChunkName: 'editor' */ './views/Editor.vue')
+      }]
     },
     {
-      path: "/manager/login",
+      path: '/manager/login',
       name: 'login',
-      component: Login
-    },
-    {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () =>
-        import( /* webpackChunkName: "about" */ "./views/About.vue")
+      component: () => import( /* webpackChunkName: 'login' */ './views/Login.vue')
     }
   ]
 });
