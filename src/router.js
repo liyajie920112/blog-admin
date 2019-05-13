@@ -17,6 +17,9 @@ export default new Router({
       component: () => import( /* webpackChunkName: 'layout' */ './views/Layout.vue'),
       children: [{
         path: '',
+        redirect: 'blogs'
+      }, {
+        path: 'blogs',
         component: () => import( /* webpackChunkName: 'layout' */ './views/Index.vue')        
       },{
         path: 'editor/:id',

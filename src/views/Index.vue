@@ -15,7 +15,7 @@
         :loading="$apollo.loading"
         @change="handleTableChange"
       >
-        <router-link slot="mytitle" slot-scope="text, record" :to="`manager/editor/${record._id}`">{{text}}</router-link>
+        <router-link slot="mytitle" slot-scope="text, record" :to="`editor/${record._id}`">{{text}}</router-link>
       </a-table>
     </div>
   </div>

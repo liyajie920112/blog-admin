@@ -23,7 +23,7 @@ export default {
     return {
       menus: [
         {
-          url: "/manager/index",
+          url: "/manager/blogs",
           text: "博客管理"
         },
         {
@@ -54,7 +54,6 @@ export default {
 <style lang="less" scoped>
 .left-wrapper {
   width: 200px;
-  height: 100%;
   background-color: #314659;
   color: #fff;
 }
