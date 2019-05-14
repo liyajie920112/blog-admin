@@ -1,9 +1,19 @@
 <template>
   <div class="editor-wrapper">
-    <div class="editor-p">
-      <div class="editor" id="editor"></div>
+    <div class="editor-header">
+      <div class="input">
+        <input type="text" placeholder="请输入标题...">
+      </div>
+      <div class="operate">
+        <a-button type="primary">发布</a-button>
+      </div>
     </div>
-    <div class="html" v-html="html"></div>
+    <div class="editor-content">
+      <div class="editor-p">
+        <div class="editor" id="editor"></div>
+      </div>
+      <div class="html" v-html="html"></div>
+    </div>
   </div>
 </template>
 
@@ -77,18 +87,48 @@ export default {
 .editor-wrapper {
   height: 100%;
   display: flex;
-  .editor-p {
-    height: 100%;
-    width: 50%;
-    flex: 1;
-    .editor {
-      height: 100%;
+  flex-direction: column;
+  .editor-header {
+    display: flex;
+    height: 63px;
+    border-bottom: 1px solid #eee;
+    color: #000;
+    padding: 0 0 0 15px;
+    .input {
+      flex: 1;
+      input {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        border: none;
+        font-size: 26px;
+        font-weight: 700;
+      }
+    }
+    .operate {
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
     }
   }
-  .html {
+  .editor-content {
+    display: flex;
     flex: 1;
-    border-left: 1px solid #000;
-    height: 100%;
+    .editor-p {
+      height: 100%;
+      width: 50%;
+      flex: 1;
+      border: 1px solid #f00;
+      .editor {
+        height: 100%;
+        padding: 10px 0;
+      }
+    }
+    .html {
+      flex: 1;
+      border-left: 1px solid #eee;
+      height: 100%;
+    }
   }
 }
 </style>
