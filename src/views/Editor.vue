@@ -27,7 +27,6 @@ import 'ace-builds/src-noconflict/theme-tomorrow'
 import hljs from 'highlight.js/lib/index.js'
 import 'highlight.js/styles/solarized-light.css'
 import '../static/editor.less'
-import marked from 'marked'
 import MarkdownIt from 'markdown-it'
 import blog from '../apollo/queries/blog.gql'
 export default {
@@ -92,19 +91,6 @@ export default {
           } catch (__) {}
         }
         return ''; // use external default escaping
-      }
-    })
-    marked.setOptions({
-      renderer: new marked.Renderer(),
-      gfm: true,
-      tables: true,
-      breaks: false,
-      pedantic: false,
-      sanitize: false,
-      smartLists: true,
-      smartypants: false,
-      highlight(code, lang) {
-        return hljs.highlightAuto(code).value
       }
     })
     this.editor = ace.edit('editor')
