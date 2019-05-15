@@ -17,8 +17,8 @@
     "core-js": "^2.6.5",
     "graphql": "^14.3.0",
     "graphql-tag": "^2.10.1",
-    "highlight.js": "^9.15.6",
-    "marked": "^0.6.2",
+    "highlight.js": "^9.13.1",
+    "markdown-it": "^8.4.2",
     "moment": "^2.24.0",
     "vue": "^2.6.10",
     "vue-apollo": "^3.0.0-beta.29",
@@ -29,11 +29,14 @@
     "@vue/cli-plugin-eslint": "^3.7.0",
     "@vue/cli-service": "^3.7.0",
     "@vue/eslint-config-prettier": "^4.0.1",
+    "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
+    "postcss-loader": "^3.0.0",
     "vue-template-compiler": "^2.5.21"
   }
 }

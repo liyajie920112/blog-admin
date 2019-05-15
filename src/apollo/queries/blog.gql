@@ -1,0 +1,7 @@
+query blog ($id: String!) {
+  blog(id: $id) {
+    title,
+    summary,
+    content
+  }
+}

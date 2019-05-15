@@ -2,40 +2,98 @@
   <div class="editor-wrapper">
     <div class="editor-header">
       <div class="input">
-        <input type="text" placeholder="请输入标题...">
+        <input type="text" v-model="blog.title" placeholder="请输入标题...">
       </div>
       <div class="operate">
-        <a-button type="primary">发布</a-button>
+        <a class="tool" href="javascript:;"><a-icon type="fullscreen" /></a>
+        <a class="tool" @click="publish" href="javascript:;">发布</a>
       </div>
     </div>
     <div class="editor-content">
       <div class="editor-p">
         <div class="editor" id="editor"></div>
       </div>
-      <div class="html" v-html="html"></div>
+      <div class="html-wrapper">
+        <div class="html" v-html="html"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import ace, { require } from 'ace-builds'
+import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-markdown'
 import 'ace-builds/src-noconflict/theme-tomorrow'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/index.js'
+import 'highlight.js/styles/solarized-light.css'
+import '../static/editor.less'
 import marked from 'marked'
+import MarkdownIt from 'markdown-it'
+import blog from '../apollo/queries/blog.gql'
 export default {
   data() {
     return {
       editor: null,
       blog: {
-        content: ''
+        _id: 0,
+        title: '',
+        content: '',
+        ispublish: true,
+        ismarkdown: true,
+        summary: '',
+        tags: '',
+        banner: '',
+        unionname: '',
+        category: '',
+        keywords: ''
       },
       html: ''
     }
   },
+  created() {
+  },
+  apollo: {
+    blog: {
+      prefetch: false,
+      query: blog,
+      variables() {
+        const { id } = this.$route.params
+        return {
+          id
+        }
+      },
+      update(data) {
+        return data.blog
+      },
+      result({ data, loading, networkStatus }) {
+        this.editor.setValue(data.blog.content)
+        this.editor.moveCursorTo(0, 0);
+        this.$nextTick(() => {
+          this.editor.resize()
+        })
+      }
+    }
+  },
+  methods: {
+    /**
+     * 发布
+     */
+    publish() {
+
+    }
+  },
   mounted() {
     hljs.initHighlightingOnLoad()
-
+    const md = new MarkdownIt({
+      highlight: (str, lang) => {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(lang, str).value;
+          } catch (__) {}
+        }
+        return ''; // use external default escaping
+      }
+    })
     marked.setOptions({
       renderer: new marked.Renderer(),
       gfm: true,
@@ -45,39 +103,34 @@ export default {
       sanitize: false,
       smartLists: true,
       smartypants: false,
-      highlight: (code, lang) => {
+      highlight(code, lang) {
         return hljs.highlightAuto(code).value
       }
     })
     this.editor = ace.edit('editor')
-    //设置代码语言，对应mode-*.js文件
+    // 设置代码语言，对应mode-*.js文件
     this.editor.session.setMode('ace/mode/markdown')
-    //设置编辑器样式，对应theme-*.js文件
+    // 设置编辑器样式，对应theme-*.js文件
     this.editor.setTheme('ace/theme/tomorrow')
 
-    //设置打印线是否显示
+    // 设置打印线是否显示
     this.editor.setShowPrintMargin(false)
-    //设置是否只读
+    // 设置是否只读
     this.editor.setReadOnly(false)
 
     this.editor.setHighlightActiveLine(false)
     this.editor.session.setUseWrapMode(true)
     this.editor.session.setTabSize(4)
 
-    //以下部分是设置输入代码提示的，如果不需要可以不用引用ext-language_tools.js
-    // ace.require("ace/ext/language_tools")
     this.editor.setOptions({
-      // enableBasicAutocompletion: true,
-      // enableSnippets: false,
-      // enableLiveAutocompletion: true,
       showGutter: false,
       showPrintMargin: false,
       fontSize: 15
     })
-    this.editor.on('change', e => {
+    this.editor.on('change', () => {
       const markdownContent = this.editor.getValue()
       this.blog.content = markdownContent
-      this.html = marked(markdownContent)
+      this.html = md.render(markdownContent)
     })
   }
 }
@@ -109,6 +162,9 @@ export default {
       display: flex;
       align-items: center;
       padding: 0 15px;
+      .tool {
+        margin-left: 10px;
+      }
     }
   }
   .editor-content {
@@ -118,16 +174,18 @@ export default {
       height: 100%;
       width: 50%;
       flex: 1;
-      border: 1px solid #f00;
+      padding: 10px 0;
       .editor {
         height: 100%;
-        padding: 10px 0;
       }
     }
-    .html {
+    .html-wrapper {
+      padding: 10px;
+      width: 50%;
       flex: 1;
       border-left: 1px solid #eee;
       height: 100%;
+      overflow: auto;
     }
   }
 }

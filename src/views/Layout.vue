@@ -19,12 +19,10 @@ export default {
 }
 </script>
 
-
 <style lang="less" scoped>
 .layout {
   display: flex;
   height: 100vh;
-  color: hsla(0,0%,100%,.65);
   .nav {
     width: 200px;
     height: 100%;
