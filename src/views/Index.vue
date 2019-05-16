@@ -119,10 +119,10 @@ export default {
         },
         // 用新数据转换之前的结果
         updateQuery: (previousResult, { fetchMoreResult }) => {
-          this.blogs = fetchMoreResult;
-          return fetchMoreResult;
+          this.blogs = fetchMoreResult
+          return fetchMoreResult
         }
-      });
+      })
     }
   }
 };

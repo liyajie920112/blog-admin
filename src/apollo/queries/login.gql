@@ -4,6 +4,7 @@ query login($username: String, $password: String, $logincode: String) {
     msg
     data {
       token
+      nickname
     }
   }
 }

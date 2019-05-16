@@ -52,6 +52,7 @@ export default {
       })
 
       if (data.userlogin.code === 0) {
+        window.localStorage.setItem('user_token', data.userlogin.data.token)
         this.$router.push('/manager/blogs')
       } else {
         console.log(data.userlogin.msg)
