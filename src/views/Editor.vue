@@ -29,6 +29,7 @@ import 'highlight.js/styles/solarized-light.css'
 import '../static/editor.less'
 import MarkdownIt from 'markdown-it'
 import blog from '../apollo/queries/blog.gql'
+import saveblog from '../apollo/mutations/saveblog.gql'
 export default {
   data() {
     return {
@@ -78,7 +79,23 @@ export default {
      * 发布
      */
     publish() {
-
+      this.$apollo.mutate({
+        mutation: saveblog,
+        variables: {
+          input: {
+            banner: '',
+            category: '5bddd177e081b570264630ac',
+            content: "↵## 正则获取html里面的内容↵↵↵```js↵const scriptHtmlTags = str => str.replace(/<[^>]*>/g, '')↵↵scriptHtmlTags('<p>123</p> <p><em>I love code</em></p>')↵↵// 打印结果: 123 I love code↵↵```",
+            ismarkdown: true
+            ,ispublish: true
+            ,keywords: 'js,获取html内容,去掉html标签'
+            ,summary: '记录常用的js代码片段'
+            ,tags: 'js'
+            ,title: 'javascript实用代码段22'
+            ,unionname: 'javascript-snippet2'
+          }
+        }
+      })
     }
   },
   mounted() {

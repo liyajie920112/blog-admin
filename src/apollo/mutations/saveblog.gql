@@ -1,0 +1,6 @@
+mutation saveBlog($input: BlogInput){
+  saveBlog(blog: $input) {
+    code
+    msg
+  }
+}

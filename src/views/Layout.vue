@@ -12,6 +12,7 @@
 
 <script>
 import { logout } from '../common/utils'
+import logoutMutation from '../apollo/mutations/logout.gql'
 import Nav from '../components/Nav'
 export default {
   components: {
@@ -21,6 +22,10 @@ export default {
     logout() {
       // 发送一个退出请求
       logout()
+      // 发送请求
+      this.$apollo.mutate({
+        mutation: logoutMutation
+      })
     }
   }
 }
