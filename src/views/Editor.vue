@@ -5,8 +5,12 @@
         <input type="text" v-model="blog.title" placeholder="请输入标题...">
       </div>
       <div class="operate">
-        <a class="tool" href="javascript:;"><a-icon type="fullscreen" /></a>
-        <a class="tool" @click="publish" href="javascript:;">发布</a>
+        <a class="tool" href="javascript:;">
+          <a-icon type="fullscreen"/>
+        </a>
+        <a class="tool" @click="publish(false)" href="javascript:;">存草稿</a>
+        <a class="tool" @click="publish(true)" href="javascript:;">发布</a>
+        <a class="tool" @click="showSeo(true)" href="javascript:;">SEO</a>
       </div>
     </div>
     <div class="editor-content">
@@ -17,6 +21,51 @@
         <div class="html" v-html="html"></div>
       </div>
     </div>
+    <transition name="fade">
+      <div class="seo-wrapper" v-show="isShowSeo">
+        <a-form>
+          <a-form-item label="分类">
+            <a-select placeholder="请选择博客分类">
+              <a-select-option value="male">male</a-select-option>
+              <a-select-option value="female">female</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="唯一的博客名称">
+            <a-input v-model="blog.unionname" placeholder="请输入唯一的博客名称"/>
+          </a-form-item>
+          <a-form-item label="Banner">
+            <a-upload
+              name="avatar"
+              listType="picture-card"
+              class="avatar-uploader"
+              :showUploadList="false"
+              action="//jsonplaceholder.typicode.com/posts/"
+              :beforeUpload="beforeUpload"
+              @change="handleUploadBanner"
+            >
+              <img v-if="blog.banner" :src="blog.banner" alt="avatar" />
+              <div v-else>
+                <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
+                <div class="ant-upload-text">Upload</div>
+              </div>
+            </a-upload>
+          </a-form-item>
+          <a-form-item label="摘要">
+            <a-textarea v-model="blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
+          </a-form-item>
+          <a-form-item label="tags">
+            <a-input v-model="blog.tags" placeholder="请输入标签, 已英文逗号分隔"/>
+          </a-form-item>
+          <a-form-item label="keywords">
+            <a-input v-model="blog.keywords" placeholder="请输入关键字, 已英文逗号分隔"/>
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="publish(true)">保存</a-button>
+            <a-button @click="showSeo(false)">关闭</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -38,7 +87,7 @@ export default {
         _id: 0,
         title: '',
         content: '',
-        ispublish: true,
+        ispublish: false,
         ismarkdown: true,
         summary: '',
         tags: '',
@@ -47,17 +96,21 @@ export default {
         category: '',
         keywords: ''
       },
-      html: ''
+      html: '',
+      isShowSeo: false,
+      checkNick: false,
+      uploadBannerLoading: false,
+      bannerUrl: ''
     }
   },
-  created() {
-  },
+  created() {},
   apollo: {
     blog: {
       prefetch: false,
       query: blog,
       variables() {
         const { id } = this.$route.params
+        this.blog._id = id
         return {
           id
         }
@@ -67,7 +120,7 @@ export default {
       },
       result({ data, loading, networkStatus }) {
         this.editor.setValue(data.blog.content)
-        this.editor.moveCursorTo(0, 0);
+        this.editor.moveCursorTo(0, 0)
         this.$nextTick(() => {
           this.editor.resize()
         })
@@ -75,28 +128,48 @@ export default {
     }
   },
   methods: {
+    showSeo(flag) {
+      this.isShowSeo = flag
+    },
+    beforeUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      if (!isJPG) {
+        this.$message.error('只可以上传.jpg格式图片')
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('图片大小必须 < 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    handleUploadBanner(info) {
+      if (info.file.status === 'uploading') {
+        this.uploadBannerLoading = true
+        return
+      }
+      if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, (imageUrl) => {
+          this.blog.banner = imageUrl
+          this.uploadBannerLoading = false
+        })
+      }
+    },
     /**
      * 发布
      */
-    publish() {
+    publish(ispublish) {
       this.$apollo.mutate({
         mutation: saveblog,
         variables: {
           input: {
-            banner: '',
-            category: '5bddd177e081b570264630ac',
-            content: "↵## 正则获取html里面的内容↵↵↵```js↵const scriptHtmlTags = str => str.replace(/<[^>]*>/g, '')↵↵scriptHtmlTags('<p>123</p> <p><em>I love code</em></p>')↵↵// 打印结果: 123 I love code↵↵```",
-            ismarkdown: true
-            ,ispublish: true
-            ,keywords: 'js,获取html内容,去掉html标签'
-            ,summary: '记录常用的js代码片段'
-            ,tags: 'js'
-            ,title: 'javascript实用代码段22'
-            ,unionname: 'javascript-snippet2'
+            ...blog,
+            ispublish
           }
         }
       })
-    }
+    },
+    handleChange() {}
   },
   mounted() {
     hljs.initHighlightingOnLoad()
@@ -104,10 +177,10 @@ export default {
       highlight: (str, lang) => {
         if (lang && hljs.getLanguage(lang)) {
           try {
-            return hljs.highlight(lang, str).value;
+            return hljs.highlight(lang, str).value
           } catch (__) {}
         }
-        return ''; // use external default escaping
+        return '' // use external default escaping
       }
     })
     this.editor = ace.edit('editor')
@@ -189,6 +262,41 @@ export default {
       border-left: 1px solid #eee;
       height: 100%;
       overflow: auto;
+    }
+  }
+  .seo-wrapper {
+    position: absolute;
+    padding: 15px;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 300px;
+    border-left: 1px solid #eee;
+    background-color: #fff;
+    z-index: 101;
+    &.fade-enter-active,
+    &.fade-leave-active {
+      transition: all 0.5s;
+    }
+    &.fade-enter,
+    &.fade-leave-to {
+      transform: translateX(100%);
+    }
+    /deep/ .ant-form-item {
+      margin-bottom: 8px;
+    }
+    /deep/ .avatar-uploader > .ant-upload {
+      width: 256px;
+      height: 128px;
+    }
+    /deep/ .ant-upload-select-picture-card i {
+      font-size: 32px;
+      color: #999;
+    }
+
+    /deep/ .ant-upload-select-picture-card .ant-upload-text {
+      margin-top: 8px;
+      color: #666;
     }
   }
 }
