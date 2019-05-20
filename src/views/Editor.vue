@@ -21,51 +21,49 @@
         <div class="html" v-html="html"></div>
       </div>
     </div>
-    <transition name="fade">
-      <div class="seo-wrapper" v-show="isShowSeo">
-        <a-form>
-          <a-form-item label="分类">
-            <a-select placeholder="请选择博客分类">
-              <a-select-option value="male">male</a-select-option>
-              <a-select-option value="female">female</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item label="唯一的博客名称">
-            <a-input v-model="blog.unionname" placeholder="请输入唯一的博客名称"/>
-          </a-form-item>
-          <a-form-item label="Banner">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-              action="//jsonplaceholder.typicode.com/posts/"
-              :beforeUpload="beforeUpload"
-              @change="handleUploadBanner"
-            >
-              <img v-if="blog.banner" :src="blog.banner" alt="avatar" />
-              <div v-else>
-                <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
-          </a-form-item>
-          <a-form-item label="摘要">
-            <a-textarea v-model="blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
-          </a-form-item>
-          <a-form-item label="tags">
-            <a-input v-model="blog.tags" placeholder="请输入标签, 已英文逗号分隔"/>
-          </a-form-item>
-          <a-form-item label="keywords">
-            <a-input v-model="blog.keywords" placeholder="请输入关键字, 已英文逗号分隔"/>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="publish(true)">保存</a-button>
-            <a-button @click="showSeo(false)">关闭</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
-    </transition>
+    <div class="seo-wrapper" :class="{ hide: isShowSeo }">
+      <a-form>
+        <a-form-item label="分类">
+          <a-select placeholder="请选择博客分类">
+            <a-select-option value="male">male</a-select-option>
+            <a-select-option value="female">female</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="唯一的博客名称">
+          <a-input v-model="blog.unionname" placeholder="请输入唯一的博客名称"/>
+        </a-form-item>
+        <a-form-item label="Banner">
+          <a-upload
+            name="avatar"
+            listType="picture-card"
+            class="avatar-uploader"
+            :showUploadList="false"
+            action="//jsonplaceholder.typicode.com/posts/"
+            :beforeUpload="beforeUpload"
+            @change="handleUploadBanner"
+          >
+            <img v-if="blog.banner" :src="blog.banner" alt="avatar" />
+            <div v-else>
+              <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
+              <div class="ant-upload-text">Upload</div>
+            </div>
+          </a-upload>
+        </a-form-item>
+        <a-form-item label="摘要">
+          <a-textarea v-model="blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
+        </a-form-item>
+        <a-form-item label="tags">
+          <a-input v-model="blog.tags" placeholder="请输入标签, 已英文逗号分隔"/>
+        </a-form-item>
+        <a-form-item label="keywords">
+          <a-input v-model="blog.keywords" placeholder="请输入关键字, 已英文逗号分隔"/>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="publish(true)">保存</a-button>
+          <a-button @click="showSeo(false)">关闭</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
   </div>
 </template>
 
@@ -97,7 +95,7 @@ export default {
         keywords: ''
       },
       html: '',
-      isShowSeo: false,
+      isShowSeo: true,
       checkNick: false,
       uploadBannerLoading: false,
       bannerUrl: ''
@@ -129,7 +127,7 @@ export default {
   },
   methods: {
     showSeo(flag) {
-      this.isShowSeo = flag
+      this.isShowSeo = !this.isShowSeo
     },
     beforeUpload(file) {
       const isJPG = file.type === 'image/jpeg'
@@ -274,12 +272,8 @@ export default {
     border-left: 1px solid #eee;
     background-color: #fff;
     z-index: 101;
-    &.fade-enter-active,
-    &.fade-leave-active {
-      transition: all 0.5s;
-    }
-    &.fade-enter,
-    &.fade-leave-to {
+    transition: all .5s;
+    &.hide {
       transform: translateX(100%);
     }
     /deep/ .ant-form-item {
