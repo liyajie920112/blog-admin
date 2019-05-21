@@ -2,7 +2,7 @@
   <div class="login-wrapper">
     <div class="form">
       <div class="form-item-header">
-        <img src="http://img0.imgtn.bdimg.com/it/u=3848288054,531111080&fm=26&gp=0.jpg" alt="">
+        <img :src="require('../assets/header/header.jpg')" alt="">
       </div>
       <div class="form-item">
         <label>用户名</label>

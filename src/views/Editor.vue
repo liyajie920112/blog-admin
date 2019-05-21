@@ -24,9 +24,9 @@
     <div class="seo-wrapper" :class="{ hide: isShowSeo }">
       <a-form>
         <a-form-item label="分类">
+          {{blog.category}}
           <a-select placeholder="请选择博客分类">
-            <a-select-option value="male">male</a-select-option>
-            <a-select-option value="female">female</a-select-option>
+            <a-select-option v-for="item in menus" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="唯一的博客名称">
@@ -42,7 +42,7 @@
             :beforeUpload="beforeUpload"
             @change="handleUploadBanner"
           >
-            <img v-if="blog.banner" :src="blog.banner" alt="avatar" />
+            <img v-if="blog.banner" :src="'https://www.liyajie.net' + blog.banner" alt="avatar" />
             <div v-else>
               <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
               <div class="ant-upload-text">Upload</div>
@@ -91,9 +91,13 @@ export default {
         tags: '',
         banner: '',
         unionname: '',
-        category: '',
+        category: {
+          text: '',
+          value: ''
+        },
         keywords: ''
       },
+      menus: [],
       html: '',
       isShowSeo: true,
       checkNick: false,
@@ -114,7 +118,9 @@ export default {
         }
       },
       update(data) {
-        return data.blog
+        const { blog, menus } = data
+        this.menus = menus
+        return data
       },
       result({ data, loading, networkStatus }) {
         this.editor.setValue(data.blog.content)
@@ -273,6 +279,7 @@ export default {
     background-color: #fff;
     z-index: 101;
     transition: all .5s;
+    overflow: auto;
     &.hide {
       transform: translateX(100%);
     }

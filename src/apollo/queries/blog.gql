@@ -1,7 +1,19 @@
 query blog ($id: String!) {
   blog(id: $id) {
-    title,
-    summary,
+    title
+    summary
     content
+    banner
+    unionname
+    tags
+    keywords
+    category {
+      text
+      value
+    }
+  }
+  menus {
+    text
+    value
   }
 }
