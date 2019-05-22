@@ -2,7 +2,6 @@ import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
-import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { logout } from '../common/utils'
 
@@ -19,15 +18,15 @@ const middlewareLink = new ApolloLink((operation, forward) => {
   return forward(operation)
 })
 const errorLink = onError(({ graphQLErrors }) => {
-  console.log(this)
   const err = graphQLErrors[0]
+  console.log(graphQLErrors)
   if (err.code === 401 || err.status === 'UNAUTHENTICATED') {
     // 没有登录
     logout()
   }
 })
 
-const link = middlewareLink.concat(errorLink).concat(httpLink).concat(createUploadLink())
+const link = middlewareLink.concat(errorLink).concat(httpLink)
 
 const cache = new InMemoryCache()
 

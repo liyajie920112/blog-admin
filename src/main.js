@@ -6,8 +6,12 @@ import 'ant-design-vue/dist/antd.min.css'
 import './static/reset.less'
 import VueApollo from 'vue-apollo'
 import apolloClient from './apollo/ApolloClient'
+import apolloUploadClient from './apollo/ApolloUploadClient'
 
 const apolloProvider = new VueApollo({
+  clients: {
+    upload: apolloUploadClient
+  },
   defaultClient: apolloClient
 })
 

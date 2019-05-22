@@ -9,7 +9,8 @@
           <a-icon type="fullscreen"/>
         </a>
         <a class="tool" href="javascript:;">
-          <a-icon type="picture" />
+          <a-icon @click.stop="insertImg('insertImg')" type="picture" />
+          <input type="file" ref="insertImg" v-show="false" @change="uploadImg">
         </a>
         <a class="tool" @click="publish(false)" href="javascript:;">存草稿</a>
         <a class="tool" @click="publish(true)" href="javascript:;">发布</a>
@@ -80,6 +81,7 @@ import '../static/editor.less'
 import MarkdownIt from 'markdown-it'
 import blog from '../apollo/queries/blog.gql'
 import saveblog from '../apollo/mutations/saveblog.gql'
+import uploadimg from '../apollo/mutations/upload.gql'
 export default {
   data() {
     return {
@@ -135,6 +137,26 @@ export default {
     }
   },
   methods: {
+    insertImg(refKey) {
+      console.log(111)
+      this.$refs[refKey].click()
+    },
+    uploadImg(e) {
+      const { files } = e.target
+      if (!files || files.length <= 0) {
+        return
+      }
+      const file = files[0]
+
+      console.log(file)
+      this.$apollo.mutate({
+        mutation: uploadimg,
+        client: 'upload',
+        variables: {
+          file: file
+        }
+      })
+    },
     showSeo(flag) {
       this.isShowSeo = !this.isShowSeo
     },
