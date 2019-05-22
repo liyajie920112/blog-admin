@@ -8,6 +8,9 @@
         <a class="tool" href="javascript:;">
           <a-icon type="fullscreen"/>
         </a>
+        <a class="tool" href="javascript:;">
+          <a-icon type="picture" />
+        </a>
         <a class="tool" @click="publish(false)" href="javascript:;">存草稿</a>
         <a class="tool" @click="publish(true)" href="javascript:;">发布</a>
         <a class="tool" @click="showSeo(true)" href="javascript:;">SEO</a>

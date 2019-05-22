@@ -2,6 +2,7 @@ import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
+import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { logout } from '../common/utils'
 
@@ -26,7 +27,7 @@ const errorLink = onError(({ graphQLErrors }) => {
   }
 })
 
-const link = middlewareLink.concat(errorLink).concat(httpLink)
+const link = middlewareLink.concat(errorLink).concat(httpLink).concat(createUploadLink())
 
 const cache = new InMemoryCache()
 
