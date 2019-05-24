@@ -2,7 +2,7 @@
   <div class="editor-wrapper">
     <div class="editor-header">
       <div class="input">
-        <input type="text" v-model="blog.title" placeholder="请输入标题...">
+        <input type="text" v-model="result.blog.title" placeholder="请输入标题...">
       </div>
       <div class="operate">
         <a class="tool" href="javascript:;">
@@ -28,13 +28,13 @@
     <div class="seo-wrapper" :class="{ hide: isShowSeo }">
       <a-form>
         <a-form-item label="分类">
-          {{blog.category}}
+          {{result.blog.category}}
           <a-select placeholder="请选择博客分类">
-            <a-select-option v-for="item in menus" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+            <a-select-option v-for="item in result.menus" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="唯一的博客名称">
-          <a-input v-model="blog.unionname" placeholder="请输入唯一的博客名称"/>
+          <a-input v-model="result.blog.unionname" placeholder="请输入唯一的博客名称"/>
         </a-form-item>
         <a-form-item label="Banner">
           <a-upload
@@ -46,7 +46,7 @@
             :beforeUpload="beforeUpload"
             @change="handleUploadBanner"
           >
-            <img v-if="blog.banner" :src="'https://www.liyajie.net' + blog.banner" alt="avatar" />
+            <img v-if="result.blog.banner" :src="'https://www.liyajie.net' + result.blog.banner" alt="avatar" />
             <div v-else>
               <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
               <div class="ant-upload-text">Upload</div>
@@ -54,13 +54,13 @@
           </a-upload>
         </a-form-item>
         <a-form-item label="摘要">
-          <a-textarea v-model="blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
+          <a-textarea v-model="result.blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
         </a-form-item>
         <a-form-item label="tags">
-          <a-input v-model="blog.tags" placeholder="请输入标签, 已英文逗号分隔"/>
+          <a-input v-model="result.blog.tags" placeholder="请输入标签, 已英文逗号分隔"/>
         </a-form-item>
         <a-form-item label="keywords">
-          <a-input v-model="blog.keywords" placeholder="请输入关键字, 已英文逗号分隔"/>
+          <a-input v-model="result.blog.keywords" placeholder="请输入关键字, 已英文逗号分隔"/>
         </a-form-item>
         <a-form-item>
           <a-button type="primary" @click="publish(true)">保存</a-button>
@@ -86,23 +86,25 @@ export default {
   data() {
     return {
       editor: null,
-      blog: {
-        _id: 0,
-        title: '',
-        content: '',
-        ispublish: false,
-        ismarkdown: true,
-        summary: '',
-        tags: '',
-        banner: '',
-        unionname: '',
-        category: {
-          text: '',
-          value: ''
+      result: {
+        blog: {
+          _id: 0,
+          title: '',
+          content: '',
+          ispublish: false,
+          ismarkdown: true,
+          summary: '',
+          tags: '',
+          banner: '',
+          unionname: '',
+          category: {
+            text: '',
+            value: ''
+          },
+          keywords: ''
         },
-        keywords: ''
+        menus: []
       },
-      menus: [],
       html: '',
       isShowSeo: true,
       checkNick: false,
@@ -110,20 +112,19 @@ export default {
       bannerUrl: ''
     }
   },
-  created() {},
   apollo: {
-    blog: {
+    result: {
       prefetch: false,
       query: blog,
       variables() {
         const { id } = this.$route.params
-        this.blog._id = id
+        this.result.blog._id = id
         return {
           id
         }
       },
       update(data) {
-        const { blog, menus } = data
+        const { menus } = data
         this.menus = menus
         return data
       },
@@ -138,7 +139,6 @@ export default {
   },
   methods: {
     insertImg(refKey) {
-      console.log(111)
       this.$refs[refKey].click()
     },
     uploadImg(e) {
@@ -147,8 +147,6 @@ export default {
         return
       }
       const file = files[0]
-
-      console.log(file)
       this.$apollo.mutate({
         mutation: uploadimg,
         client: 'upload',
@@ -178,10 +176,10 @@ export default {
       }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.blog.banner = imageUrl
-          this.uploadBannerLoading = false
-        })
+        // getBase64(info.file.originFileObj, (imageUrl) => {
+        //   this.blog.banner = imageUrl
+        //   this.uploadBannerLoading = false
+        // })
       }
     },
     /**
@@ -234,7 +232,7 @@ export default {
     })
     this.editor.on('change', () => {
       const markdownContent = this.editor.getValue()
-      this.blog.content = markdownContent
+      this.result.blog.content = markdownContent
       this.html = md.render(markdownContent)
     })
   }
