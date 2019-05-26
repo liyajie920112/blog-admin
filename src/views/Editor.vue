@@ -28,9 +28,8 @@
     <div class="seo-wrapper" :class="{ hide: isShowSeo }">
       <a-form>
         <a-form-item label="分类">
-          {{result.blog.category}}
-          <a-select placeholder="请选择博客分类">
-            <a-select-option v-for="item in result.menus" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+          <a-select :value="result.blog.category.value" placeholder="请选择博客分类">
+            <a-select-option v-for="item in result.menus" :key="item.value">{{item.text}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="唯一的博客名称">
@@ -124,8 +123,6 @@ export default {
         }
       },
       update(data) {
-        const { menus } = data
-        this.menus = menus
         return data
       },
       result({ data, loading, networkStatus }) {
@@ -141,19 +138,22 @@ export default {
     insertImg(refKey) {
       this.$refs[refKey].click()
     },
-    uploadImg(e) {
+    async uploadImg(e) {
       const { files } = e.target
       if (!files || files.length <= 0) {
         return
       }
       const file = files[0]
-      this.$apollo.mutate({
+      const res = await this.$apollo.mutate({
         mutation: uploadimg,
         client: 'upload',
         variables: {
           file: file
         }
       })
+      const { domain, path } = res.data.singleUpload
+      const imgpath = domain + path
+      this.editor.insert(`![](${imgpath})`)
     },
     showSeo(flag) {
       this.isShowSeo = !this.isShowSeo
@@ -185,8 +185,10 @@ export default {
     /**
      * 发布
      */
-    publish(ispublish) {
-      this.$apollo.mutate({
+    async publish(ispublish) {
+      console.log(this.result.blog)
+      return
+      const res = this.$apollo.mutate({
         mutation: saveblog,
         variables: {
           input: {

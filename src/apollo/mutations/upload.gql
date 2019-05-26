@@ -3,5 +3,7 @@ mutation uploadimg($file: Upload!) {
     filename
     mimetype
     encoding
+    path
+    domain
   }
 }
