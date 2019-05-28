@@ -10,10 +10,11 @@ query blog ($id: String!) {
     category {
       text
       value
+      _id
     }
   }
   menus {
     text
-    value
+    _id
   }
 }

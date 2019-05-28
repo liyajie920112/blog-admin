@@ -28,8 +28,8 @@
     <div class="seo-wrapper" :class="{ hide: isShowSeo }">
       <a-form>
         <a-form-item label="分类">
-          <a-select :value="result.blog.category.value" placeholder="请选择博客分类">
-            <a-select-option v-for="item in result.menus" :key="item.value">{{item.text}}</a-select-option>
+          <a-select @change="handleSelectChange" :value="result.blog.category._id" placeholder="请选择博客分类">
+            <a-select-option v-for="item in result.menus" :key="item._id">{{item.text}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="唯一的博客名称">
@@ -81,6 +81,7 @@ import MarkdownIt from 'markdown-it'
 import blog from '../apollo/queries/blog.gql'
 import saveblog from '../apollo/mutations/saveblog.gql'
 import uploadimg from '../apollo/mutations/upload.gql'
+import menus from '../apollo/queries/menus.gql'
 export default {
   data() {
     return {
@@ -98,7 +99,7 @@ export default {
           unionname: '',
           category: {
             text: '',
-            value: ''
+            _id: ''
           },
           keywords: ''
         },
@@ -111,30 +112,42 @@ export default {
       bannerUrl: ''
     }
   },
-  apollo: {
-    result: {
-      prefetch: false,
-      query: blog,
-      variables() {
-        const { id } = this.$route.params
-        this.result.blog._id = id
-        return {
-          id
-        }
-      },
-      update(data) {
-        return data
-      },
-      result({ data, loading, networkStatus }) {
-        this.editor.setValue(data.blog.content)
-        this.editor.moveCursorTo(0, 0)
-        this.$nextTick(() => {
-          this.editor.resize()
-        })
-      }
+  created() {
+    const { id } = this.$route.params
+    if (id) {
+      this.getBlogModel(id)
+    } else {
+      this.getMenus()
     }
   },
   methods: {
+    async getBlogModel(id) {
+      const res = await this.$apollo.query({
+        query: blog,
+        variables: {
+          id
+        }
+      })
+      const { data, loading } = res
+      this.result = data
+      this.result.blog._id = id
+      this.$nextTick(() => {
+        this.editor.setValue(data.blog.content)
+        this.editor.moveCursorTo(0, 0)
+        this.editor.resize()
+      })
+    },
+    async getMenus() {
+      const res = await this.$apollo.query({
+        query: menus
+      })
+      const { data } = res
+      this.result.menus = data.menus
+      console.log(res)
+    },
+    handleSelectChange(item, op) {
+      this.result.blog.category._id = item
+    },
     insertImg(refKey) {
       this.$refs[refKey].click()
     },
@@ -187,16 +200,17 @@ export default {
      */
     async publish(ispublish) {
       console.log(this.result.blog)
-      return
-      const res = this.$apollo.mutate({
+      const res = await this.$apollo.mutate({
         mutation: saveblog,
         variables: {
           input: {
             ...blog,
-            ispublish
+            ispublish,
+            ismarkdown: true
           }
         }
       })
+      console.log(res)
     },
     handleChange() {}
   },

@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     addBlog() {
-      this.$router.push({path: 'manager/editor'})
+      this.$router.push({path: 'editor'})
     },
     onSelect(item) {
       console.log(item)
