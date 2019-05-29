@@ -78,17 +78,15 @@ import hljs from 'highlight.js/lib/index.js'
 import 'highlight.js/styles/solarized-light.css'
 import '../static/editor.less'
 import MarkdownIt from 'markdown-it'
-import blog from '../apollo/queries/blog.gql'
-import saveblog from '../apollo/mutations/saveblog.gql'
-import uploadimg from '../apollo/mutations/upload.gql'
-import menus from '../apollo/queries/menus.gql'
+import { saveblog, upload as uploadimg } from '../apollo/mutations'
+import { blog, menus } from '../apollo/queries'
 export default {
   data() {
     return {
       editor: null,
       result: {
         blog: {
-          _id: 0,
+          _id: '',
           title: '',
           content: '',
           ispublish: false,
@@ -128,7 +126,7 @@ export default {
           id
         }
       })
-      const { data, loading } = res
+      const { data } = res
       this.result = data
       this.result.blog._id = id
       this.$nextTick(() => {
@@ -200,19 +198,21 @@ export default {
      */
     async publish(ispublish) {
       console.log(this.result.blog)
+      const params = {
+        ...this.result.blog,
+        category: this.result.blog.category._id,
+        ispublish,
+        ismarkdown: true
+      }
+      console.log(params)
       const res = await this.$apollo.mutate({
         mutation: saveblog,
         variables: {
-          input: {
-            ...blog,
-            ispublish,
-            ismarkdown: true
-          }
+          input: params
         }
       })
       console.log(res)
-    },
-    handleChange() {}
+    }
   },
   mounted() {
     hljs.initHighlightingOnLoad()

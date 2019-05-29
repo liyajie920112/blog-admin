@@ -16,48 +16,55 @@
         @change="handleTableChange"
       >
         <router-link slot="mytitle" slot-scope="text, record" :to="`editor/${record._id}`">{{text}}</router-link>
+        <a slot="operate" slot-scope="text, record" @click="delBlogById(record)" href="javascript:;">Delete</a>
       </a-table>
     </div>
   </div>
 </template>
 <script>
-import moment from "moment";
-import blogs from "../apollo/queries/blogs.gql";
+import moment from 'moment'
+import { blogs } from '../apollo/queries'
+import { delBlogById } from '../apollo/mutations'
 const columns = [
   {
-    title: "#",
-    width: "50px",
+    title: '#',
+    width: '50px',
     customRender: (text, record, index) => {
       return index + 1;
     }
   },
   {
-    title: "标题",
-    dataIndex: "title",
+    title: '标题',
+    dataIndex: 'title',
     key: 'title',
     scopedSlots: { customRender: 'mytitle' }
   },
   {
-    title: "Author",
-    dataIndex: "author.nickname",
-    width: "100px"
+    title: '作者',
+    dataIndex: 'author.nickname',
+    width: '100px'
   },
   {
-    title: "分类",
-    dataIndex: "category.text",
-    width: "100px"
+    title: '分类',
+    dataIndex: 'category.text',
+    width: '100px'
   },
   {
-    title: "创建时间",
-    dataIndex: "createDate",
-    width: "200px",
+    title: '创建时间',
+    dataIndex: 'createDate',
+    width: '200px',
     customRender: (text, record) => {
-      return moment(parseInt(record.createDate)).format("YYYY-MM-DD HH:mm:ss");
+      return moment(parseInt(record.createDate)).format('YYYY-MM-DD HH:mm:ss');
     }
+  },
+  {
+    title: '操作',
+    key: 'operate',
+    scopedSlots: { customRender: 'operate' }
   }
 ];
 export default {
-  layout: "admin",
+  layout: 'admin',
   data() {
     return {
       blogs: {
@@ -105,11 +112,17 @@ export default {
     }
   },
   methods: {
-    addBlog() {
-      this.$router.push({path: 'editor'})
+    async delBlogById(obj) {
+      const res = await this.$apollo.mutate({
+        mutation: delBlogById,
+        variables: {
+          id: obj._id
+        }
+      })
+      console.log(res)
     },
-    onSelect(item) {
-      console.log(item)
+    addBlog() {
+      this.$router.push({ path: 'editor' })
     },
     handleTableChange(page, pageSize) {
       this.$apollo.queries.blogs.fetchMore({

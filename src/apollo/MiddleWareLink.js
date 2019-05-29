@@ -5,6 +5,12 @@ const middlewareLink = new ApolloLink((operation, forward) => {
       authorization: window.localStorage.getItem('user_token') || ''
     }
   })
+  // 过滤掉__typename
+  if (operation.variables) {
+    operation.variables = JSON.parse(JSON.stringify(operation.variables), (key, value) => {
+      return key === '__typename' ? undefined : value
+    })
+  }
   return forward(operation)
 })
 
