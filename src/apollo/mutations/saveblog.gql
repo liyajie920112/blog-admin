@@ -1,5 +1,5 @@
 mutation saveBlog($input: BlogInput){
-  saveBlog(blog: $input) {
+  data: saveBlog(blog: $input) {
     code
     msg
   }

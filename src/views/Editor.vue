@@ -10,7 +10,7 @@
         </a>
         <a class="tool" href="javascript:;">
           <a-icon @click.stop="insertImg('insertImg')" type="picture" />
-          <input type="file" ref="insertImg" v-show="false" @change="uploadImg">
+          <input type="file" ref="insertImg" v-show="false" @change="insertContentImg($event, 0)">
         </a>
         <a class="tool" @click="publish(false)" href="javascript:;">存草稿</a>
         <a class="tool" @click="publish(true)" href="javascript:;">发布</a>
@@ -36,21 +36,14 @@
           <a-input v-model="result.blog.unionname" placeholder="请输入唯一的博客名称"/>
         </a-form-item>
         <a-form-item label="Banner">
-          <a-upload
-            name="avatar"
-            listType="picture-card"
-            class="avatar-uploader"
-            :showUploadList="false"
-            action="//jsonplaceholder.typicode.com/posts/"
-            :beforeUpload="beforeUpload"
-            @change="handleUploadBanner"
-          >
-            <img v-if="result.blog.banner" :src="'https://www.liyajie.net' + result.blog.banner" alt="avatar" />
-            <div v-else>
+          <div class="upload-banner" @click="insertImg('insertBanner')">
+            <img v-if="result.blog.banner" :src="bannerUrl" alt="avatar" />
+            <div class="banner-content" v-else>
+              <input type="file" ref="insertBanner" @change="insertBannerImg($event, 1)" v-show="false">
               <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
               <div class="ant-upload-text">Upload</div>
             </div>
-          </a-upload>
+          </div>
         </a-form-item>
         <a-form-item label="摘要">
           <a-textarea v-model="result.blog.summary" placeholder="请输入摘要" :autosize="{ minRows: 2, maxRows: 6 }" />
@@ -141,7 +134,6 @@ export default {
       })
       const { data } = res
       this.result.menus = data.menus
-      console.log(res)
     },
     handleSelectChange(item, op) {
       this.result.blog.category._id = item
@@ -149,7 +141,7 @@ export default {
     insertImg(refKey) {
       this.$refs[refKey].click()
     },
-    async uploadImg(e) {
+    async uploadImg(e, type) {
       const { files } = e.target
       if (!files || files.length <= 0) {
         return
@@ -159,12 +151,24 @@ export default {
         mutation: uploadimg,
         client: 'upload',
         variables: {
-          file: file
+          file: file,
+          type
         }
       })
       const { domain, path } = res.data.singleUpload
-      const imgpath = domain + path
-      this.editor.insert(`![](${imgpath})`)
+      return {
+        domain,
+        path
+      }
+    },
+    async insertContentImg(e, type) {
+      const { domain, path } = await this.uploadImg(e, type)
+      this.editor.insert(`![](${domain}${path})`)
+    },
+    async insertBannerImg(e, type) {
+      const { domain, path } = await this.uploadImg(e, type)
+      this.result.blog.banner = path
+      this.bannerUrl = domain + path
     },
     showSeo(flag) {
       this.isShowSeo = !this.isShowSeo
@@ -180,31 +184,21 @@ export default {
       }
       return isJPG && isLt2M
     },
-    handleUploadBanner(info) {
-      if (info.file.status === 'uploading') {
-        this.uploadBannerLoading = true
-        return
-      }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        // getBase64(info.file.originFileObj, (imageUrl) => {
-        //   this.blog.banner = imageUrl
-        //   this.uploadBannerLoading = false
-        // })
-      }
-    },
     /**
      * 发布
      */
     async publish(ispublish) {
-      console.log(this.result.blog)
+      if (!this.result.blog.category._id) {
+        this.$message.warning('请选择分类')
+        this.showSeo(true)
+        return
+      }
       const params = {
         ...this.result.blog,
         category: this.result.blog.category._id,
         ispublish,
         ismarkdown: true
       }
-      console.log(params)
       const res = await this.$apollo.mutate({
         mutation: saveblog,
         variables: {
@@ -212,6 +206,12 @@ export default {
         }
       })
       console.log(res)
+      const { data } = res
+      if (data.data.code === 0) {
+        this.$message.success(data.data.msg)
+      } else {
+        this.$message.error(data.data.msg)
+      }
     }
   },
   mounted() {
@@ -325,9 +325,30 @@ export default {
     /deep/ .ant-form-item {
       margin-bottom: 8px;
     }
-    /deep/ .avatar-uploader > .ant-upload {
+    /deep/ .upload-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px dashed #ddd;
       width: 256px;
-      height: 128px;
+      min-height: 128px;
+      transition: all .3s;
+      &:hover {
+        border-color: #0094ff;
+      }
+      .banner-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        cursor: pointer;
+        i {
+          font-size: 32px;
+          color: #999;
+        }
+      }
     }
     /deep/ .ant-upload-select-picture-card i {
       font-size: 32px;

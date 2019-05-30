@@ -16,7 +16,10 @@
         @change="handleTableChange"
       >
         <router-link slot="mytitle" slot-scope="text, record" :to="`editor/${record._id}`">{{text}}</router-link>
-        <a slot="operate" slot-scope="text, record" @click="delBlogById(record)" href="javascript:;">Delete</a>
+        <a-popconfirm okText="Sure" cancelText="Cancel" @confirm="confirmDel(record)" slot="operate" slot-scope="text, record" title="你确定要删除吗?">
+          <a-icon slot="icon" type="question-circle-o" style="color: red" />
+          <a href="javascript:;">Delete</a>
+        </a-popconfirm>
       </a-table>
     </div>
   </div>
@@ -101,25 +104,41 @@ export default {
   },
   apollo: {
     blogs: {
-      prefetch: true,
+      prefetch: false,
+      manual: true,
       query: blogs,
       variables() {
         return {
           pageIndex: this.pagination.current,
           pageSize: this.pagination.pageSize
         };
+      },
+      result({ data, loading }) {
+        if (!loading) {
+          this.blogs = data.blogs
+        }
       }
     }
   },
   methods: {
-    async delBlogById(obj) {
+    async confirmDel(obj) {
+      const loading = this.$message.loading('正在删除...')
       const res = await this.$apollo.mutate({
         mutation: delBlogById,
         variables: {
           id: obj._id
         }
       })
-      console.log(res)
+      const { data: r } = res
+      const { data } = r
+      if (data.code === 0) {
+        loading()
+        this.$message.success(data.msg)
+        this.handleTableChange({ current: this.pagination.current, pageSize: this.pagination.pageSize })
+      } else {
+        loading()
+        this.$message.error(data.msg)
+      }
     },
     addBlog() {
       this.$router.push({ path: 'editor' })
@@ -140,11 +159,3 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped>
-.blog-wrapper {
-  .filter-wrapper {
-  }
-  .table-wrapper {
-  }
-}
-</style>

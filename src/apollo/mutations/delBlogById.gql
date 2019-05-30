@@ -1,5 +1,5 @@
 mutation delBlogById($id: ID!) {
-  delBlogById(id: $id) {
+  data: delBlogById(id: $id) {
     code
     msg
   }

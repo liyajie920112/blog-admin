@@ -1,5 +1,5 @@
-mutation uploadimg($file: Upload!) {
-  singleUpload(file: $file) {
+mutation uploadimg($file: Upload!, $type: Int) {
+  singleUpload(file: $file, type: $type) {
     filename
     mimetype
     encoding
