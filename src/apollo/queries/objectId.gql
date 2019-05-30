@@ -1,0 +1,9 @@
+query objectId {
+  data: objectId {
+    code
+    msg
+    data {
+      objectId
+    }
+  }
+}

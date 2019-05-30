@@ -9,23 +9,15 @@ export default new Router({
     path: '/',
     redirect: '/manager'
   }, {
+    path: '/editor/:id?',
+    name: 'editor',
+    component: () => import(/* webpackChunkName: 'editor' */ './views/Editor.vue')
+  }, {
     path: '/manager',
-    component: () => import(/* webpackChunkName: 'layout' */ './views/Layout.vue'),
-    children: [{
-      path: '',
-      redirect: 'blogs'
-    }, {
-      path: 'blogs',
-      component: () => import(/* webpackChunkName: 'layout' */ './views/Index.vue')
-    }, {
-      path: 'editor',
-      name: 'editor',
-      component: () => import(/* webpackChunkName: 'editor' */ './views/Editor.vue')
-    }, {
-      path: 'editor/:id',
-      name: 'editor',
-      component: () => import(/* webpackChunkName: 'editor' */ './views/Editor.vue')
-    }]
+    component: () => import(/* webpackChunkName: 'nav' */ './views/Index.vue')
+  }, {
+    path: '/blogs',
+    component: () => import(/* webpackChunkName: 'layout' */ './views/Blogs.vue')
   }, {
     path: '/manager/login',
     name: 'login',

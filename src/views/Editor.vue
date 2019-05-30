@@ -6,9 +6,6 @@
       </div>
       <div class="operate">
         <a class="tool" href="javascript:;">
-          <a-icon type="fullscreen"/>
-        </a>
-        <a class="tool" href="javascript:;">
           <a-icon @click.stop="insertImg('insertImg')" type="picture" />
           <input type="file" ref="insertImg" v-show="false" @change="insertContentImg($event, 0)">
         </a>
@@ -39,10 +36,10 @@
           <div class="upload-banner" @click="insertImg('insertBanner')">
             <img v-if="result.blog.banner" :src="bannerUrl" alt="avatar" />
             <div class="banner-content" v-else>
-              <input type="file" ref="insertBanner" @change="insertBannerImg($event, 1)" v-show="false">
               <a-icon :type="uploadBannerLoading ? 'loading' : 'plus'" />
               <div class="ant-upload-text">Upload</div>
             </div>
+            <input type="file" ref="insertBanner" @change="insertBannerImg($event, 1)" v-show="false">
           </div>
         </a-form-item>
         <a-form-item label="摘要">
@@ -121,6 +118,7 @@ export default {
       })
       const { data } = res
       this.result = data
+      this.bannerUrl = data.config.domain + data.blog.banner
       this.result.blog._id = id
       this.$nextTick(() => {
         this.editor.setValue(data.blog.content)
@@ -205,9 +203,13 @@ export default {
           input: params
         }
       })
-      console.log(res)
       const { data } = res
       if (data.data.code === 0) {
+        const { objectId } = data.data.data
+        if (objectId) {
+          this.result.blog._id = objectId
+          this.$router.replace('editor/' + this.result.blog._id)
+        }
         this.$message.success(data.data.msg)
       } else {
         this.$message.error(data.data.msg)
@@ -257,7 +259,7 @@ export default {
 
 <style lang="less" scoped>
 .editor-wrapper {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   .editor-header {

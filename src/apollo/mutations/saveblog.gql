@@ -2,5 +2,8 @@ mutation saveBlog($input: BlogInput){
   data: saveBlog(blog: $input) {
     code
     msg
+    data {
+      objectId
+    }
   }
 }

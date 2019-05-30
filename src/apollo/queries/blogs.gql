@@ -4,6 +4,7 @@ query blogs($pageIndex: Int!, $pageSize: Int!){
       _id
       title
       createDate
+      ispublish
       author {
         nickname
       }

@@ -17,4 +17,7 @@ query blog ($id: String!) {
     text
     _id
   }
+  config {
+    domain
+  }
 }
