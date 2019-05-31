@@ -1,13 +1,29 @@
 <template>
   <div class="nav-wrapper">
-    <div class="nav-item">
-      <router-link to="/blogs">博客管理</router-link>
-    </div>
-    <div class="nav-item">
-      <router-link to="/users">用户管理</router-link>
+    <div class="nav-item" v-for="item in data.navs" :key="item.text">
+      <router-link :to="item.url">{{item.text}}</router-link>
     </div>
   </div>
 </template>
+
+<script>
+import navs from '../apollo/queries/navs.gql'
+export default {
+  data() {
+    return {
+      data: {
+        navs: []
+      }
+    }
+  },
+  apollo: {
+    data: {
+      prefetch: true,
+      query: navs
+    }
+  }
+}
+</script>
 
 <style lang="less" scoped>
 .nav-wrapper {

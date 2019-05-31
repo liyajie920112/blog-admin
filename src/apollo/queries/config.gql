@@ -1,5 +1,0 @@
-query config {
-  data: config {
-    domain
-  }
-}

@@ -1,0 +1,8 @@
+query config {
+  data: config {
+    navs {
+      url
+      text
+    }
+  }
+}

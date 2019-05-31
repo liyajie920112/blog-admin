@@ -7,16 +7,16 @@ export default new Router({
   mode: 'history',
   routes: [{
     path: '/',
-    redirect: '/manager'
+    redirect: '/manager/index'
   }, {
-    path: '/editor/:id?',
+    path: '/manager/editor/:id?',
     name: 'editor',
     component: () => import(/* webpackChunkName: 'editor' */ './views/Editor.vue')
   }, {
-    path: '/manager',
+    path: '/manager/index',
     component: () => import(/* webpackChunkName: 'nav' */ './views/Index.vue')
   }, {
-    path: '/blogs',
+    path: '/manager/blogs',
     component: () => import(/* webpackChunkName: 'layout' */ './views/Blogs.vue')
   }, {
     path: '/manager/login',

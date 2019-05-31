@@ -3,7 +3,7 @@ import blogs from './blogs.gql'
 import login from './login.gql'
 import menus from './menus.gql'
 import objectId from './objectId.gql'
-import config from './config.gql'
+import navs from './navs.gql'
 
 export {
   blog,
@@ -11,5 +11,5 @@ export {
   login,
   menus,
   objectId,
-  config
+  navs
 }
