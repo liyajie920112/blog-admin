@@ -19,7 +19,7 @@
     "core-js": "^2.6.5",
     "graphql": "^14.3.0",
     "graphql-tag": "^2.10.1",
-    "highlight.js": "^9.13.1",
+    "highlight.js": "^10.4.1",
     "markdown-it": "^8.4.2",
     "moment": "^2.24.0",
     "vue": "^2.6.10",
